@@ -3,21 +3,11 @@
 #include <cctype> 
 #include <fstream>
 #include <sstream>
-
-struct Pipe{
-    std::string name;
+struct Pipe{ std::string name;
     float length;
     float diameter;
     bool is_reparing;
 };
-
-Pipe new_pipe(std::string name, float length, bool is_reparing) {
-    Pipe p;
-    p.name = name;
-    p.length = length;
-    p.is_reparing = is_reparing;
-    return p;
-}
 
 std::string string_pipe(const Pipe & r_pipe) {
     std::stringstream s_string;
@@ -35,21 +25,12 @@ struct C_station {
     float efficiency;
 };
 
-C_station new_c_station(std::string name, int workshops, int working_shops, float efficiency) {
-    C_station station;
-    station.name = name;
-    station.workshops = workshops;
-    station.working_workshops = working_shops;
-    station.efficiency = efficiency;
-    return station;
-}
-
-std::string string_c_station(C_station & ptr_station) {
+std::string string_c_station(C_station & r_station) {
     std::stringstream s_string;
-    s_string << "КС " << ptr_station.name << '\n' <<
-                 "Количество цехов " << ptr_station.workshops << '\n' <<
-                 "Количество цехов в работе " << ptr_station.working_workshops << '\n' <<
-                 "эффективность " <<  ptr_station.efficiency << '\n';
+    s_string << "КС " << r_station.name << '\n' <<
+                 "Количество цехов " << r_station.workshops << '\n' <<
+                 "Количество цехов в работе " << r_station.working_workshops << '\n' <<
+                 "эффективность " <<  r_station.efficiency << '\n';
     return s_string.str();
 }
 
@@ -101,10 +82,23 @@ std::string get_string(std::string out_str) {
 
     for (;;) {
         std::cout << "Введите имя: ";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::getline(std::cin, res);
+        std::getline(std::cin>>std::ws, res);
         if (!res.empty()) {
             return res;
+        }
+    }
+}
+static bool sup_get_pipe_is_reparing() {
+    char inp_tmp;
+    std::cout << "Труба в ремонте? (Y/n): ";
+    while (std::cin >> inp_tmp) {
+        switch(std::tolower(inp_tmp)){
+            case 'y':
+                return true;
+            case 'n':
+                return false;
+            default:
+                std::cout << "Труба в ремонте? (Y/n): ";
         }
     }
 }
@@ -116,10 +110,7 @@ void add_pipe(Pipe & r_pipe) {
     r_pipe.length = get_pos_float("Введите длину: ");
     r_pipe.diameter = get_pos_float("Введите диаметр: ");
 
-    std::cout << "Труба в ремонте (Y/n)";
-    char tmp_inp;
-    std::cin >> tmp_inp;
-    r_pipe.is_reparing = (tmp_inp == 'y' || tmp_inp == 'Y');
+    r_pipe.is_reparing = sup_get_pipe_is_reparing();
 }
 
 void add_c_station(C_station & r_station) {
@@ -128,8 +119,10 @@ void add_c_station(C_station & r_station) {
 
     r_station.workshops = get_pos_int("Введите количество цехов: ");
 
+
     for(r_station.working_workshops = get_pos_int("Введите количество цехов в работе: ");
-            r_station.working_workshops > r_station.workshops;);
+        r_station.working_workshops > r_station.workshops;
+        r_station.working_workshops = get_pos_int("Введите количество цехов в работе: "));
 
     r_station.efficiency = get_pos_float("Введите эффективность: ");
 }
@@ -149,33 +142,68 @@ void print_all(Pipe &r_pipe, C_station &r_station) {
     }
 }
 
-void edit_pipe(Pipe &ptr_pipe) {
-
-    std::cout << "Труба в ремонте? (Y/n): ";
-    char inp_tmp;
-    std::cin >> inp_tmp;
-    
-    ptr_pipe.is_reparing = (inp_tmp == 'y' || inp_tmp == 'Y');
-
+void edit_pipe(Pipe &r_pipe) {
+    if (r_pipe.name == "") {
+        std::cout << "Труба не создана\n";
+        return;
+    }
+    r_pipe.is_reparing = sup_get_pipe_is_reparing();
 }
 
-void edit_c_station(C_station & station) {
-    station.working_workshops = get_pos_int("Введите количество цехов в работе: ");
+void edit_c_station(C_station & r_station) {
+    if (r_station.name == "") {
+        std::cout << "Станция не создана\n";
+        return;
+    }
+
+    for(r_station.working_workshops = get_pos_int("Введите количество цехов в работе: ");
+        r_station.working_workshops > r_station.workshops;
+        r_station.working_workshops = get_pos_int("Введите количество цехов в работе: "));
+}
+
+void save_pipe(std::ofstream & file, Pipe & r_pipe) {
+    file << "Pipe\n" <<
+            r_pipe.name << '\n' <<
+            r_pipe.length << '\n' <<
+            r_pipe.diameter << '\n' <<
+            r_pipe.is_reparing << '\n';
+}
+
+void save_station(std::ofstream & file, C_station & r_station) {
+    file << "Station\n" <<
+            r_station.name << '\n' <<
+            r_station.workshops << '\n' <<
+            r_station.working_workshops << '\n' <<
+            r_station.efficiency << '\n';
+}
+
+void load_pipe(std::ifstream & file, Pipe & r_pipe) {
+    std::getline(file>>std::ws, r_pipe.name,'\n');
+    file >> r_pipe.length >> r_pipe.diameter >> r_pipe.is_reparing;
+}
+
+void load_station(std::ifstream & file, C_station & r_station) {
+    std::getline(file>>std::ws, r_station.name, '\n');
+    file >> r_station.workshops >> r_station.working_workshops
+            >> r_station.efficiency;
 }
 
 void save_to_file(std::string file_name, Pipe & r_pipe, C_station & r_station) {
     std::ofstream file;
+
     file.open(file_name);
 
-    file << r_pipe.name << ' ' <<
-            r_pipe.length << ' ' <<
-            r_pipe.diameter << ' ' <<
-            r_pipe.is_reparing << ' ';
+    if (!file.good()) {
+        std::cout << "файл не создан\n";
+        return;
+    }
 
-    file << r_station.name << ' ' <<
-            r_station.workshops << ' ' <<
-            r_station.working_workshops << ' ' <<
-            r_station.efficiency << ' ';
+    if (r_pipe.name != "") {
+        save_pipe(file, r_pipe);
+    }
+    if (r_station.name != "") {
+        save_station(file, r_station);
+    }
 
     file.close();
 }
@@ -183,11 +211,23 @@ void save_to_file(std::string file_name, Pipe & r_pipe, C_station & r_station) {
 void load_from_file(std::string file_name, Pipe & r_pipe, C_station & r_station) {
     std::ifstream file;
     file.open(file_name);
+    if (!file.good()) {
+        std::cout << "Файл сохранения не существует\n";
+        return;
+    }
+    if (file.peek() == EOF) {
+        std::cout << "Файл пустой\n";
+    }
 
-    file >> r_pipe.name >> r_pipe.length >> r_pipe.diameter >> r_pipe.is_reparing
-         >> r_station.name >> r_station.workshops >> r_station.working_workshops
-            >> r_station.efficiency;
-
+    std::string type;
+    while (file >> type){
+        if (type == "Pipe") {
+            load_pipe(file, r_pipe);
+        }
+        if (type == "Station") {
+            load_station(file, r_station);
+        }
+    }
     file.close();
 }
 
@@ -204,37 +244,37 @@ int main() {
         .efficiency = 0,
     };
     
-    draw_main_page();
 
-    char input;
-    while (std::cin >> input) {
+    int input;
+    for(;;)  {
+        draw_main_page();
+        input = get_pos_int("");
         switch (input) {
-            case '1': //Добавить трубу
+            case 1: //Добавить трубу
                 add_pipe(pipe_main);
                 break;
-            case '2': //Добавить КС
+            case 2: //Добавить КС
                 add_c_station(c_station_main);
                 break;
-            case '3': //Просмотр всех объектов
+            case 3: //Просмотр всех объектов
                 print_all(pipe_main, c_station_main);
                 break;
-            case '4': //Редактировать трубу
+            case 4: //Редактировать трубу
                 edit_pipe(pipe_main);
                 break;
-            case '5': //Редактировать КС
+            case 5: //Редактировать КС
                 edit_c_station(c_station_main);
                 break;
-            case '6':
+            case 6:
                 save_to_file("save.txt",pipe_main,c_station_main);
                 break;
-            case '7': 
+            case 7: 
                 load_from_file("save.txt",pipe_main,c_station_main);
                 break;
-            case '0': 
+            case 0: 
                 return 0;
             default:
                 std::cout << "Введите корректное значение\n";
         }
-        draw_main_page();
     }
 }
