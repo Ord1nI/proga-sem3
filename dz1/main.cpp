@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <cctype> 
 #include <fstream>
 #include <sstream>
 struct Pipe{ std::string name;
