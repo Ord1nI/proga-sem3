@@ -1,38 +1,6 @@
 #include <iostream>
 #include "utils.h"
 
-int get_pos_int(std::string out_str) {
-    int res;
-
-    for (;;) {
-        std::cout << out_str;
-
-        if(std::cin >> res && res >= 0) {
-            return res;
-        } else {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Некорректный ввод\n";
-        }
-    }
-}
-
-float get_pos_float(std::string out_str) {
-    float res = -1;
-
-    for (;;) {
-
-        std::cout << out_str;
-        if(std::cin >> res && res >= 0) {
-            return res;
-        } else {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Некорректные данные\n";
-        }
-    }
-}
-
 std::string get_string(std::string out_str) {
     std::string res;
 

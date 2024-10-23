@@ -2,11 +2,27 @@
 #define _UTILS_H_
 
 #include <string>
+#include <iostream>
 
 
-int get_pos_int(std::string out_str);
+template<typename T>
+T get_pos_number(std::string out_str) {
+    T res;
+
+    for (;;) {
+        std::cout << out_str;
+
+        if(std::cin >> res && res >= 0) {
+            return res;
+        } else {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Некорректный ввод\n";
+        }
+    }
+}
+
 bool get_bool(std::string str);
-float get_pos_float(std::string out_str);
 std::string get_string(std::string out_str);
 
 #endif

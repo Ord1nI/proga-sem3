@@ -1,5 +1,6 @@
 #include "app.h"
 #include "../utils/utils.h"
+#include "../c_station/c_station.h"
 #include <iostream>
 #include <sstream>
 
@@ -18,7 +19,7 @@ void App::c_station_operation() {
     int input;
     for(;;) {
         show_c_station_operations();
-        input = get_pos_int("");
+        input = get_pos_number<int>("");
         switch(input) {
             case 1:
                 add_c_station();
@@ -51,26 +52,24 @@ void App::c_station_operation() {
 void App::add_c_station() {
     std::string name = get_string("Enter name: ");
 
-    int workshops = get_pos_int("Enter number of workshops: ");
+    int workshops = get_pos_number<int>("Enter number of workshops: ");
 
     int working_workshops;
 
-    for(working_workshops = get_pos_int("Enter number of working workshops: ");
+    for(working_workshops = get_pos_number<int>("Enter number of working workshops: ");
         working_workshops > workshops;
-        working_workshops = get_pos_int("Enter number of working workshops: "));
+        working_workshops = get_pos_number<int>("Enter number of working workshops: "));
 
-    factory.add(C_station(id_factory,
-                          name,
+    factory.add(C_station(name,
                           workshops,
                           working_workshops,
-                          get_pos_float("Enter efficiency: "))
+                          get_pos_number<float>("Enter efficiency: "))
     );
-
-    id_factory++;
 }
 
 void App::c_station_select_by_name() {
-    if (this->factory.select_by_name(get_string("Введите имя: ")) > 0) {
+    std::string name = get_string("Введите имя: ");
+    if (factory.select_by_name(name).size() > 0) {
         c_station_show_selected_items();
     } else {
         std::cout << "No pipes was found\n";
@@ -78,7 +77,8 @@ void App::c_station_select_by_name() {
 }
 
 void App::c_station_select_by_working_workshops() {
-    if (this->factory.select_by_working_workshops(get_pos_int("Введите количесво рабочих станций: ")) > 0) {
+    int working_workshops = get_pos_number<int>("Введите количесво рабочих станций: ");
+    if (factory.select_by_working_workshops(working_workshops).size() > 0) {
         c_station_show_selected_items();
     } else {
         std::cout << "No stations was fount\n";
@@ -100,22 +100,23 @@ void App::c_station_clear_selection() {
 
 void App::c_station_change() {
     c_station_show_selected_items();
-    int new_workshops = get_pos_int("Enter new working workshops value: ");
-    std::stringstream ss(get_string("Enter ids devided by space: "));
+    int efficiency = get_pos_number<float>("Enter new efficiency value: ");
 
-    int id;
+    std::unordered_set<unsigned int> inp;
 
-    while(!ss.eof()) {
-        if (ss >> id) {
-            if (factory.change(id, new_workshops)) {
-                std::cout << id << " changed\n";
+    unsigned int tmp_inp;
+    size_t tmp_size = 0;
+
+    while((tmp_inp = get_pos_number<int>("ID:")) > 0) {
+        inp.emplace(tmp_inp);
+
+        if(inp.size() > tmp_size) {
+            if (factory.change(tmp_inp, efficiency)) {
+                std::cout << tmp_inp << " changed\n";
             } else {
-                std::cout << id << " doesn't change\n";
+                std::cout << tmp_inp << " doesn't change\n";
             }
-        } else {
-            ss.clear();
-            ss.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Wrong input\n";
+            tmp_size = inp.size();
         }
     }
     c_station_clear_selection();

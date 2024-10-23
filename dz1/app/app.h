@@ -4,10 +4,9 @@
 #include "../pipeline/pipeline.h"
 #include "../factory/factory.h"
 
-class App {
-    int id_pipeline;
-    int id_factory;
+#define _SAVE_FILE_ "./save.txt"
 
+class App {
     Pipeline pipeline;
     Factory factory;
 

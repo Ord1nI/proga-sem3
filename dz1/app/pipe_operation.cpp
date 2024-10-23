@@ -1,7 +1,8 @@
 #include "app.h"
+#include "../pipe/pipe.h"
 #include <iostream>
 #include "../utils/utils.h"
-#include <sstream>
+#include <unordered_set>
 
 void App::show_pipe_operations() {
     std::cout << "1. Add Pipe\n" <<
@@ -17,7 +18,7 @@ void App::pipe_operation() {
     int input;
     for(;;) {
         show_pipe_operations();
-        input = get_pos_int("");
+        input = get_pos_number<int>("");
         switch (input) {
             case 1:
                 add_pipe();
@@ -46,25 +47,27 @@ void App::pipe_operation() {
 }
 
 void App::add_pipe() {
-    pipeline.add(Pipe(id_pipeline,
-                      get_string("Enter name: "),
-                      get_pos_float("Enter length: "),
-                      get_pos_float("Enter diameter: "),
+    pipeline.add(Pipe(get_string("Enter name: "),
+                      get_pos_number<float>("Enter length: "),
+                      get_pos_number<float>("Enter diameter: "),
                       get_bool("Is pipe reparing? (Y/n): "))
     );
-    id_pipeline++;
 }
 
 void App::pipe_select_by_name() {
-    if (this->pipeline.select_by_name(get_string("Введите имя: ")) > 0) {
+    std::string name = get_string("Введите имя: ");
+
+    if (pipeline.select_by_name(name).size() > 0) {
         pipe_show_selected_items();
     } else {
-        std::cout << "No pipes was found\n";
+        std::cout << "No pipes was fount\n";
     }
 }
 
 void App::pipe_select_by_is_reparing() {
-    if (this->pipeline.select_by_is_reparing(get_bool("Is pipe reparing? (Y/n): ")) > 0) {
+    bool is_r = get_bool("Is pipe reparing? (Y/n): ");
+
+    if (pipeline.select_by_is_reparing(is_r).size() > 0) {
         pipe_show_selected_items();
     } else {
         std::cout << "No pipes was found\n";
@@ -86,22 +89,25 @@ void App::pipe_clear_selection() {
 
 void App::pipe_change() {
     pipe_show_selected_items();
-    std::stringstream ss(get_string("Enter ids devided by space"));
+    std::cout << "Enter ids to edit(0 is the end of input)\n";
 
-    int id;
+    std::unordered_set<unsigned int> inp;
 
-    while(!ss.eof()) {
-        if (ss >> id) {
-            if (pipeline.change(id)) {
-                std::cout << id << " changed\n";
+    unsigned int tmp_inp;
+    size_t tmp_size = 0;
+
+    while((tmp_inp = get_pos_number<int>("ID:")) > 0) {
+        inp.emplace(tmp_inp);
+
+        if(inp.size() > tmp_size) {
+            if (pipeline.change(tmp_inp)) {
+                std::cout << tmp_inp << " changed\n";
             } else {
-                std::cout << id << " not in selected list\n";
+                std::cout << tmp_inp << " doesn't change\n";
             }
-        } else {
-            ss.clear();
-            ss.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Wrong input\n";
+            tmp_size = inp.size();
         }
     }
+
     pipe_clear_selection();
 }

@@ -1,24 +1,25 @@
+//Убрал id
+//Добавил
 #ifndef _PIPE_H_
 #define _PIPE_H_
 
-#include "fstream"
+#include <string>
 
 class Pipe{
-    int id;
     std::string name;
     float length;
     float diameter;
     bool is_reparing;
 
+    int error;
 public:
-    Pipe(int id, std::string name, float length, float diameter, bool is_reparing);
+    Pipe(std::string name, float length, float diameter, bool is_reparing);
     Pipe();
 
-    int get_id();
-    std::string get_name();
-    float get_length();
-    float get_diameter();
-    bool get_is_reapring();
+    std::string get_name() const;
+    float get_length() const;
+    float get_diameter() const;
+    bool get_is_reapring() const;
 
     void  change_is_reparing();
 
