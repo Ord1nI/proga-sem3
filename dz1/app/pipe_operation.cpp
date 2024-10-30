@@ -10,7 +10,8 @@ void App::show_pipe_operations() {
                  "3. Select by feature \"Is reparing\"\n" <<
                  "4. Show selected items\n" <<
                  "5. Clear selected\n" <<
-                 "6. Change in selected feateure \"Is reparing\"\n" <<
+                 "6. Change by id\n" <<
+                 "7. Change all\n" <<
                  "0. Back\n";
 }
 
@@ -36,8 +37,10 @@ void App::pipe_operation() {
                 pipe_clear_selection();
                 break;
             case 6:
-                pipe_change();
+                pipe_change_by_id();
                 break;
+            case 7:
+                pipe_change_all();
             case 0:
                 return;
             default:
@@ -74,12 +77,14 @@ void App::pipe_select_by_is_reparing() {
     }
 }
 
-void App::pipe_show_selected_items() {
+bool App::pipe_show_selected_items() {
     std::string out = this->pipeline.string_selected();
     if (out.length() == 0) {
         std::cout << "Selected list is empty\n";
+        return false;
     } else {
         std::cout << out;
+        return true;
     }
 }
 
@@ -87,8 +92,10 @@ void App::pipe_clear_selection() {
     this->pipeline.clear_selection();
 }
 
-void App::pipe_change() {
-    pipe_show_selected_items();
+void App::pipe_change_by_id() {
+    if (!pipe_show_selected_items()) {
+        return;
+    }
     std::cout << "Enter ids to edit(0 is the end of input)\n";
 
     std::unordered_set<unsigned int> inp;
@@ -96,7 +103,7 @@ void App::pipe_change() {
     unsigned int tmp_inp;
     size_t tmp_size = 0;
 
-    while((tmp_inp = get_pos_number<int>("ID:")) > 0) {
+    while((tmp_inp = get_pos_number<int>("ID: ")) > 0) {
         inp.emplace(tmp_inp);
 
         if(inp.size() > tmp_size) {
@@ -106,6 +113,22 @@ void App::pipe_change() {
                 std::cout << tmp_inp << " doesn't change\n";
             }
             tmp_size = inp.size();
+        }
+    }
+
+    pipe_clear_selection();
+}
+
+void App::pipe_change_all() {
+    if (!pipe_show_selected_items()) {
+        return;
+    }
+
+    for (auto tmp_inp : pipeline.get_selected()) {
+        if (pipeline.change(tmp_inp)) {
+            std::cout << tmp_inp << " changed\n";
+        } else {
+            std::cout << tmp_inp << " doesn't change\n";
         }
     }
 

@@ -17,6 +17,8 @@ class Pipeline {
 public:
     Pipeline();
 
+    const std::unordered_set<unsigned int>& get_selected();
+
     void add(Pipe pipe);
 
     std::string string_selected();

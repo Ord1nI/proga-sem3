@@ -8,6 +8,7 @@ std::string get_string(std::string out_str) {
         std::cout << out_str;
         std::getline(std::cin>>std::ws, res);
         if (!res.empty()) {
+            Logger("get string:", res);
             return res;
         }
     }

@@ -22,11 +22,13 @@ class App {
     void pipe_select_by_name();
     void pipe_select_by_is_reparing();
 
-    void pipe_show_selected_items();
+    bool pipe_show_selected_items();
 
     void pipe_clear_selection();
 
-    void pipe_change();
+    void pipe_change_by_id();
+
+    void pipe_change_all();
 
 
     //C_STATION OPERATION
@@ -39,11 +41,13 @@ class App {
     void c_station_select_by_name();
     void c_station_select_by_working_workshops();
 
-    void c_station_show_selected_items();
+    bool c_station_show_selected_items();
 
     void c_station_clear_selection();
 
-    void c_station_change();
+    void c_station_change_by_id();
+
+    void c_station_change_all();
     //
 
     void save_to_file();

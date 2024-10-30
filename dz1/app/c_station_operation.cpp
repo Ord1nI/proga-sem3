@@ -2,16 +2,16 @@
 #include "../utils/utils.h"
 #include "../c_station/c_station.h"
 #include <iostream>
-#include <sstream>
 
 
 void App::show_c_station_operations() {
     std::cout << "1. Add C_station\n" <<
                  "2. Select by name\n" <<
-                 "3. Select by working workshops\n" <<
+                 "3. Select by not working workshops\n" <<
                  "4. Show selected items\n" <<
                  "5. Clear selected\n" <<
-                 "6. Change in selected working workshops\n" <<
+                 "6. Change in selected by id\n" <<
+                 "7. Cahnge all in selected\n"
                  "0. Back\n";
 }
 
@@ -37,7 +37,10 @@ void App::c_station_operation() {
                 c_station_clear_selection();
                 break;
             case 6:
-                c_station_change();
+                c_station_change_by_id();
+                break;
+            case 7:
+                c_station_change_all();
                 break;
             case 0:
                 return;
@@ -68,7 +71,7 @@ void App::add_c_station() {
 }
 
 void App::c_station_select_by_name() {
-    std::string name = get_string("Введите имя: ");
+    std::string name = get_string("Enter name: ");
     if (factory.select_by_name(name).size() > 0) {
         c_station_show_selected_items();
     } else {
@@ -77,20 +80,22 @@ void App::c_station_select_by_name() {
 }
 
 void App::c_station_select_by_working_workshops() {
-    int working_workshops = get_pos_number<int>("Введите количесво рабочих станций: ");
-    if (factory.select_by_working_workshops(working_workshops).size() > 0) {
+    int working_workshops = get_pos_number<int>("Enter persent of not working station: ");
+    if (factory.select_by_not_working_workshops(working_workshops).size() > 0) {
         c_station_show_selected_items();
     } else {
         std::cout << "No stations was fount\n";
     }
 }
 
-void App::c_station_show_selected_items() {
+bool App::c_station_show_selected_items() {
     std::string out = this->factory.string_selected();
     if (out.length() == 0) {
         std::cout << "Selected list is empty\n";
+        return false;
     } else {
         std::cout << out;
+        return true;
     }
 }
 
@@ -98,9 +103,10 @@ void App::c_station_clear_selection() {
     this->factory.clear_selection();
 }
 
-void App::c_station_change() {
-    c_station_show_selected_items();
-    int efficiency = get_pos_number<float>("Enter new efficiency value: ");
+void App::c_station_change_by_id() {
+    if (!c_station_show_selected_items()) {
+        return;
+    }
 
     std::unordered_set<unsigned int> inp;
 
@@ -111,12 +117,27 @@ void App::c_station_change() {
         inp.emplace(tmp_inp);
 
         if(inp.size() > tmp_size) {
-            if (factory.change(tmp_inp, efficiency)) {
+            if (factory.change(tmp_inp)) {
                 std::cout << tmp_inp << " changed\n";
             } else {
                 std::cout << tmp_inp << " doesn't change\n";
             }
             tmp_size = inp.size();
+        }
+    }
+    c_station_clear_selection();
+}
+
+void App::c_station_change_all() {
+    if (!c_station_show_selected_items()) {
+        return;
+    }
+
+    for (auto id : factory.get_selected()) {
+        if (factory.change(id)) {
+            std::cout << id << " changed\n";
+        } else {
+            std::cout << id << " doesn't change\n";
         }
     }
     c_station_clear_selection();

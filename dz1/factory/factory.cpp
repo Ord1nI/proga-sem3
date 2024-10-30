@@ -2,14 +2,23 @@
 #include <sstream>
 #include <fstream>
 
+
+Factory::Factory() {
+    this->id = 1;
+}
+
 void Factory::add(C_station c_station) {
     factory.emplace(id++, c_station);
+}
+
+const std::unordered_set<unsigned int>& Factory::get_selected() {
+    return selected;
 }
 
 std::string Factory::string_selected() {
     std::stringstream str;
     for (auto id : selected) {
-        str << factory.at(id).string() << '\n';
+        str << "id: "<< id << factory.at(id).string() << '\n';
     }
     return str.str();
 }
@@ -17,7 +26,7 @@ std::string Factory::string_selected() {
 std::string Factory::string_factory() {
     std::stringstream str;
     for (auto c_station : factory) {
-        str << c_station.second.string() << '\n';
+        str << "id: " << c_station.first <<c_station.second.string() << '\n';
     }
     return str.str();
 }
@@ -44,10 +53,10 @@ const std::unordered_set<unsigned int>& Factory::select_by_name(std::string name
     return this->selected;
 }
 
-const std::unordered_set<unsigned int>& Factory::select_by_working_workshops(int working_workshops) {
+const std::unordered_set<unsigned int>& Factory::select_by_not_working_workshops(unsigned int not_working_workshops) {
     int count = 0;
     for (auto& c_station : factory) {
-        if (c_station.second.get_working_workshops() >= working_workshops) {
+        if (c_station.second.get_not_working_workshops() == not_working_workshops) {
            selected.emplace(c_station.first);
            count++;
         }
@@ -59,12 +68,9 @@ void Factory::clear_selection() {
     this->selected.clear();
 }
 
-bool Factory::change(int id, int workshops) {
+bool Factory::change(int id) {
     if (this->selected.find(id) != selected.end()) {
-        if (this->factory.at(id).get_workshops() >= workshops) {
-            this->factory.at(id).set_working_workshops(workshops);
-            return true;
-        }
+        return this->factory.at(id).inc_working_workshops();
     }
     return false;
 }
@@ -72,6 +78,8 @@ bool Factory::change(int id, int workshops) {
 
 
 void Factory::load(std::ifstream &file) {
+    // INFO("Load factory");
+
     size_t n;
     file >> n;
     for (size_t i = 0; i < n; i++) {
@@ -85,10 +93,16 @@ void Factory::load(std::ifstream &file) {
         file >> id >> tmp_workshops >> tmp_working_workshops >> tmp_efficiency;
 
         this->factory.emplace(id, C_station(tmp_name, tmp_workshops, tmp_working_workshops,tmp_efficiency));
+
+        if(id > this->id) {
+            this->id = id+1;
+        }
     }
 }
 
 void Factory::save(std::ofstream &file) {
+    // INFO("Save factory");
+
     file << "FACTORY\n";
     file << factory.size() << '\n';
     for (auto &f : factory) {

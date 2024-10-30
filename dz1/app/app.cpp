@@ -2,10 +2,7 @@
 #include <iostream>
 #include "../utils/utils.h"
 
-#include "../logger.h"
-
 App::App() {
-    Logger::init();
     this->pipeline = Pipeline();
     this->factory = Factory();
 }
@@ -59,7 +56,8 @@ void App::save_to_file() {
     std::ofstream file(_SAVE_FILE_);
 
     if (!file.good()) {
-        Logger::info("File ", _SAVE_FILE_," doesn't exist\n");
+        // ERR("Error while saving ","File ", _SAVE_FILE_, " doesn't exits");
+
         std::cout << "File doesn't exits\n";
         return;
     }
@@ -73,13 +71,13 @@ void App::load_from_file() {
     std::ifstream file(_SAVE_FILE_);
 
     if (!file.good()) {
+        // ERR("Error while loading ","File ", _SAVE_FILE_, " doesn't exits");
+
         std::cout << "File doesn't exitst\n";
-        Logger::info("File ", _SAVE_FILE_," is empty\n");
         return;
     }
     if (file.peek() == EOF) {
         std::cout << "File is empty\n";
-        Logger::info("File ", _SAVE_FILE_," is empty\n");
     }
 
     std::string type;

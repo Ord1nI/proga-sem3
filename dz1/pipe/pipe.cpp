@@ -8,6 +8,8 @@ Pipe::Pipe(std::string name, float length, float diameter, bool is_reparing) {
     assert(diameter>=0.0f);
 
     if (diameter<0.0f || length <0.0f) {
+
+        // ERR("Pipe with name ", name, " has negative length or diameter");
         error = 1;
         this->name = "";
         this->length = 0;

@@ -11,23 +11,22 @@ class C_station {
     unsigned int workshops;
     unsigned int working_workshops;
     float efficiency;
+    unsigned int not_working_workshops;
+
 
     int error;
 public:
     C_station(std::string name, unsigned int workshops, unsigned int working_workshops,float efficiency);
-    C_station();
 
     std::string get_name() const;
-    int get_workshops() const;
-    int get_working_workshops() const;
+    unsigned int get_workshops() const;
+    unsigned int get_working_workshops() const;
+    float get_not_working_workshops() const;
     float get_efficiency() const;
 
     bool good();
 
-    void set_name(std::string name);
-    void set_workshops(unsigned int workshops);
-    void set_working_workshops(unsigned int working_workshops);
-    void set_efficiency(float efficiency);
+    bool inc_working_workshops();
 
     std::string string();
 };
