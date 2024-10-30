@@ -8,7 +8,7 @@ std::string get_string(std::string out_str) {
         std::cout << out_str;
         std::getline(std::cin>>std::ws, res);
         if (!res.empty()) {
-            Logger("get string:", res);
+            Logger(res,'\n');
             return res;
         }
     }
@@ -18,6 +18,7 @@ bool get_bool(std::string str) {
     char inp_tmp;
     std::cout << str;
     while (std::cin >> inp_tmp) {
+        Logger(inp_tmp,'\n');
         switch(std::tolower(inp_tmp)){
             case 'y':
                 return true;
@@ -27,4 +28,5 @@ bool get_bool(std::string str) {
                 std::cout << str;
         }
     }
+    return false;
 }

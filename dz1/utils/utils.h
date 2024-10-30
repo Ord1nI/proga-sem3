@@ -12,7 +12,7 @@ void info(Args... msgs) {
     (std::cerr << ... << msgs);
 }
 
-#define Logger(x...) (info("[LOG]\t",__FILE__ ,' ' , __LINE__, ' ', __func__, ' ', x, '\n'))
+#define Logger(x...) (info(x))
 #endif
 
 template<typename T>
@@ -23,7 +23,7 @@ T get_pos_number(std::string out_str) {
         std::cout << out_str;
 
         if(std::cin >> res && res >= 0) {
-            Logger("Get: ",out_str, res);
+            Logger(res,'\n');
             return res;
         } else {
             std::cin.clear();
