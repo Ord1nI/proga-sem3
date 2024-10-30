@@ -2,6 +2,7 @@
 #include "../utils/utils.h"
 #include "../c_station/c_station.h"
 #include <iostream>
+#include <sstream>
 
 
 void App::show_c_station_operations() {
@@ -113,14 +114,16 @@ void App::c_station_change_by_id() {
     unsigned int tmp_inp;
     size_t tmp_size = 0;
 
-    while((tmp_inp = get_pos_number<int>("ID:")) > 0) {
+    std::cout << "ID:";
+    while((tmp_inp = get_pos_number<int>("")) > 0) {
+        std::stringstream out;
         inp.emplace(tmp_inp);
 
         if(inp.size() > tmp_size) {
             if (factory.change(tmp_inp)) {
-                std::cout << tmp_inp << " changed\n";
+                out << tmp_inp << " changed\n";
             } else {
-                std::cout << tmp_inp << " doesn't change\n";
+                out << tmp_inp << " doesn't change\n";
             }
             tmp_size = inp.size();
         }

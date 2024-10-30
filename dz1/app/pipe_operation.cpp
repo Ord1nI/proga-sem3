@@ -103,7 +103,8 @@ void App::pipe_change_by_id() {
     unsigned int tmp_inp;
     size_t tmp_size = 0;
 
-    while((tmp_inp = get_pos_number<int>("ID: ")) > 0) {
+    std::cout << "ID: ";
+    while((tmp_inp = get_pos_number<int>("")) > 0) {
         inp.emplace(tmp_inp);
 
         if(inp.size() > tmp_size) {

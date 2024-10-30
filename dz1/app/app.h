@@ -4,8 +4,6 @@
 #include "../pipeline/pipeline.h"
 #include "../factory/factory.h"
 
-#define _SAVE_FILE_ "./save.txt"
-
 class App {
     Pipeline pipeline;
     Factory factory;

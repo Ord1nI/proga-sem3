@@ -50,11 +50,11 @@ void App::print_all() {
               << pipeline.string_pipelines();
     std::cout << "----Stations----\n"
               << factory.string_factory();
-}
+};
 
 void App::save_to_file() {
-    std::ofstream file(_SAVE_FILE_);
-
+    std::string file_name = get_string("Введите файл сохранения: ");
+    std::ofstream file(file_name);
     if (!file.good()) {
         // ERR("Error while saving ","File ", _SAVE_FILE_, " doesn't exits");
 
@@ -68,7 +68,8 @@ void App::save_to_file() {
 }
 
 void App::load_from_file() {
-    std::ifstream file(_SAVE_FILE_);
+    std::string file_name = get_string("Введите файл сохранения: ");
+    std::ifstream file(file_name);
 
     if (!file.good()) {
         // ERR("Error while loading ","File ", _SAVE_FILE_, " doesn't exits");
